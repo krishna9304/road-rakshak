@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import Mapbox, { Marker } from "react-map-gl";
+import io from "socket.io-client";
 import "./App.css";
+import { BACKEND_URL } from "./constants";
+
+const socket = io(`${BACKEND_URL}`, {
+  transports: ["websocket"],
+});
 
 function App() {
   const [target, setTarget] = useState({
@@ -20,6 +26,10 @@ function App() {
         longitude: pos.coords.longitude,
       });
       setTarget({
+        latitude: pos.coords.latitude,
+        longitude: pos.coords.longitude,
+      });
+      socket.emit("hlw", {
         latitude: pos.coords.latitude,
         longitude: pos.coords.longitude,
       });
