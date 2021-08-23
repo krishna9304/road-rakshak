@@ -1,44 +1,57 @@
 import { useEffect, useState } from "react";
+import Mapbox, { Marker } from "react-map-gl";
 import "./App.css";
 
 function App() {
-  const [location, setLocation] = useState({
-    lat: null,
-    lon: null,
+  const [target, setTarget] = useState({
+    latitude: 0,
+    longitude: 0,
+  });
+  const size = window.screen;
+  const [viewport, setViewport] = useState({
+    latitude: 25.0960742,
+    longitude: 85.31311939999999,
+    zoom: 8,
   });
   useEffect(() => {
-    function success(position) {
-      setLocation({
-        lat: position.coords.latitude,
-        lon: position.coords.longitude,
-      });
+    let watchId = navigator.geolocation.watchPosition((pos) => {
       console.log({
-        lat: position.coords.latitude,
-        lon: position.coords.longitude,
+        latitude: pos.coords.latitude,
+        longitude: pos.coords.longitude,
       });
-    }
-
-    function error() {
-      alert("Sorry, no position available.");
-    }
-
-    const options = {
-      enableHighAccuracy: true,
-      maximumAge: 30000,
-      timeout: 27000,
+      setTarget({
+        latitude: pos.coords.latitude,
+        longitude: pos.coords.longitude,
+      });
+    });
+    return () => {
+      navigator.geolocation.clearWatch(watchId);
     };
-
-    const watchID = navigator.geolocation.watchPosition(
-      success,
-      error,
-      options
-    );
   }, []);
   return (
     <div className="App">
-      <h1 className="flex text-xs w-full min-h-screen text-center  justify-center items-center">
-        {JSON.stringify(location)}
-      </h1>
+      <Mapbox
+        onResize={() => console.log("lol")}
+        width={size.width}
+        height={size.height}
+        mapStyle="mapbox://styles/not-valid/ckslvv1eudbjl17pjfkr59qn0" //decimal
+        // mapStyle={"mapbox://styles/not-valid/ckslwn5xz29oc17lwznn465cl"} // blueprint
+        onViewportChange={setViewport}
+        {...viewport}
+        mapboxApiAccessToken={
+          "pk.eyJ1Ijoibm90LXZhbGlkIiwiYSI6ImNrbGt1M2ZiMTEwaDMycG5tbDhseTY5YmoifQ.j0DITrdH06LMzgQ4A-H5vg"
+        }
+      >
+        <Marker latitude={target.latitude} longitude={target.longitude}>
+          <div
+            style={{
+              width: viewport.zoom * 4 < 10 ? 10 : viewport.zoom * 4,
+              height: viewport.zoom * 4 < 10 ? 10 : viewport.zoom * 4,
+            }}
+            className="rounded-full bg-red-400"
+          ></div>
+        </Marker>
+      </Mapbox>
     </div>
   );
 }
