@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import Mapbox, { Marker } from "react-map-gl";
+import Mapbox, {
+  GeolocateControl,
+  Marker,
+  NavigationControl,
+} from "react-map-gl";
 import io from "socket.io-client";
 import "./App.css";
 import { BACKEND_URL } from "./constants";
@@ -17,7 +21,7 @@ function App() {
   const [viewport, setViewport] = useState({
     latitude: 25.0960742,
     longitude: 85.31311939999999,
-    zoom: 8,
+    zoom: 5,
   });
   useEffect(() => {
     let watchId = navigator.geolocation.watchPosition((pos) => {
@@ -41,7 +45,6 @@ function App() {
   return (
     <div className="App">
       <Mapbox
-        onResize={() => console.log("lol")}
         width={size.width}
         height={size.height}
         mapStyle="mapbox://styles/not-valid/ckslvv1eudbjl17pjfkr59qn0" //decimal
@@ -52,15 +55,16 @@ function App() {
           "pk.eyJ1Ijoibm90LXZhbGlkIiwiYSI6ImNrbGt1M2ZiMTEwaDMycG5tbDhseTY5YmoifQ.j0DITrdH06LMzgQ4A-H5vg"
         }
       >
-        <Marker latitude={target.latitude} longitude={target.longitude}>
-          <div
-            style={{
-              width: viewport.zoom * 4 < 10 ? 10 : viewport.zoom * 4,
-              height: viewport.zoom * 4 < 10 ? 10 : viewport.zoom * 4,
-            }}
-            className="rounded-full bg-red-400"
-          ></div>
-        </Marker>
+        <NavigationControl
+          className="float-left mt-2 mx-1 p-4"
+          onViewportChange={setViewport}
+        />
+        <GeolocateControl
+          className="float-left mt-16 mx-12 p-4"
+          positionOptions={{ enableHighAccuracy: true }}
+          trackUserLocation={true}
+          onViewportChange={setViewport}
+        />
       </Mapbox>
     </div>
   );
