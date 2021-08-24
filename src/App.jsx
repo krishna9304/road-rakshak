@@ -19,16 +19,20 @@ function App() {
   });
   const size = window.screen;
   const [viewport, setViewport] = useState({
-    latitude: 25.0960742,
-    longitude: 85.31311939999999,
+    latitude: 0,
+    longitude: 0,
     zoom: 5,
   });
   useEffect(() => {
     let watchId = navigator.geolocation.watchPosition((pos) => {
-      console.log({
-        latitude: pos.coords.latitude,
-        longitude: pos.coords.longitude,
-      });
+      console.log(
+        {
+          latitude: pos.coords.latitude,
+          longitude: pos.coords.longitude,
+        },
+        console.error,
+        { enableHighAccuracy: true }
+      );
       setTarget({
         latitude: pos.coords.latitude,
         longitude: pos.coords.longitude,
@@ -59,12 +63,18 @@ function App() {
           className="float-left mt-2 mx-1 p-4"
           onViewportChange={setViewport}
         />
-        <GeolocateControl
+        {/* <GeolocateControl
           className="float-left mt-16 mx-12 p-4"
           positionOptions={{ enableHighAccuracy: true }}
           trackUserLocation={true}
           onViewportChange={setViewport}
-        />
+        /> */}
+        <Marker latitude={target.latitude} longitude={target.longitude}>
+          <div className="p-2 border-2 border-white rounded-full bg-green-500 animate-ping"></div>
+        </Marker>
+        <Marker latitude={target.latitude} longitude={target.longitude}>
+          <div className="p-2 border-2 border-white rounded-full bg-green-500"></div>
+        </Marker>
       </Mapbox>
     </div>
   );
