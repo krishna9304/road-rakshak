@@ -1,9 +1,5 @@
 import { useEffect, useState } from "react";
-import Mapbox, {
-  GeolocateControl,
-  Marker,
-  NavigationControl,
-} from "react-map-gl";
+import Mapbox, { Marker, NavigationControl } from "react-map-gl";
 import io from "socket.io-client";
 import "./App.css";
 import { BACKEND_URL } from "./constants";
@@ -52,7 +48,6 @@ function App() {
         width={size.width}
         height={size.height}
         mapStyle="mapbox://styles/not-valid/ckslvv1eudbjl17pjfkr59qn0" //decimal
-        // mapStyle={"mapbox://styles/not-valid/ckslwn5xz29oc17lwznn465cl"} // blueprint
         onViewportChange={setViewport}
         {...viewport}
         mapboxApiAccessToken={
@@ -63,12 +58,6 @@ function App() {
           className="float-left mt-2 mx-1 p-4"
           onViewportChange={setViewport}
         />
-        {/* <GeolocateControl
-          className="float-left mt-16 mx-12 p-4"
-          positionOptions={{ enableHighAccuracy: true }}
-          trackUserLocation={true}
-          onViewportChange={setViewport}
-        /> */}
         <Marker latitude={target.latitude} longitude={target.longitude}>
           <div className="p-2 border-2 border-white rounded-full bg-green-500 animate-ping"></div>
         </Marker>
