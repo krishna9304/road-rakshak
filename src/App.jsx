@@ -8,6 +8,9 @@ import { setAuth, setSocket, setUser } from "./redux/actions/actions";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
+import SignUp from "./pages/signUp";
+import SignIn from "./pages/signIn";
+import Dashboard from "./pages/dashboard";
 
 function App() {
   let [authDone, setAuthDone] = useState(false);
@@ -74,7 +77,25 @@ function App() {
             path={"/"}
             exact
             render={() => {
-              if (globalState.auth) return <Map />;
+              if (!globalState.auth) return <Map />;
+            }}
+          />
+          <Route
+            path={"/signup"}
+            render={() => {
+              return <SignUp />;
+            }}
+          />
+          <Route
+            path={"/signin"}
+            render={() => {
+              return <SignIn />;
+            }}
+          />
+          <Route
+            path={"/dashboard"}
+            render={() => {
+              return <Dashboard />;
             }}
           />
         </Switch>

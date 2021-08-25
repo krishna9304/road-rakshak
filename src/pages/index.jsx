@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { FullscreenControl, Marker, ScaleControl } from "react-map-gl";
 import Mapbox from "react-map-gl";
-import "./App.css";
 import { useSelector } from "react-redux";
 
 const Map = () => {
@@ -53,6 +52,7 @@ const Map = () => {
         { enableHighAccuracy: true }
       );
     }, 3000);
+    // eslint-disable-next-line
   }, []);
 
   return (
