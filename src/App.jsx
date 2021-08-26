@@ -11,6 +11,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import SignUp from "./pages/signUp";
 import SignIn from "./pages/signIn";
 import Dashboard from "./pages/dashboard";
+import { notification } from "antd";
 
 function App() {
   let [authDone, setAuthDone] = useState(false);
@@ -19,10 +20,10 @@ function App() {
   let authUser = () => {
     if (document.cookie !== null && document.cookie !== "") {
       let token = extractCookies(document.cookie).jwt;
-
       if (token !== undefined || token !== null || token !== "") {
+        console.log(token);
         axios
-          .post(`${BACKEND_URL}/api/v1/auth/verifyToken`, {
+          .post(`${BACKEND_URL}api/v1/userAuth/verifyToken`, {
             token: token,
           })
           .then((res) => {
@@ -30,13 +31,16 @@ function App() {
               if (res.data.res) {
                 dispatch(setAuth(true));
                 dispatch(setUser(res.data.userData));
-                let socket = io(`${BACKEND_URL}`, {
+                const socket = io(`${BACKEND_URL}`, {
                   transports: ["websocket"],
                 });
                 dispatch(setSocket(socket));
                 socket.emit("USER_ID", res.data.userData._id);
                 setAuthDone(true);
-                console.log(res.data.msg);
+                notification.success({
+                  message: "Success",
+                  description: res.data.msg,
+                });
               } else {
                 dispatch(setAuth(false));
                 dispatch(setUser(null));
@@ -77,12 +81,14 @@ function App() {
             path={"/"}
             exact
             render={() => {
-              if (!globalState.auth) return <Map />;
+              if (globalState.auth) return <Map />;
+              return <SignUp />;
             }}
           />
           <Route
             path={"/signup"}
             render={() => {
+              if (globalState.auth) return <Dashboard />;
               return <SignUp />;
             }}
           />

@@ -43,10 +43,10 @@ const Map = () => {
             latitude: pos.coords.latitude,
             longitude: pos.coords.longitude,
           }));
-          socket.emit("log", {
-            latitude: pos.coords.latitude,
-            longitude: pos.coords.longitude,
-          });
+          // socket.emit("log", {
+          //   latitude: pos.coords.latitude,
+          //   longitude: pos.coords.longitude,
+          // });
         },
         console.error,
         { enableHighAccuracy: true }

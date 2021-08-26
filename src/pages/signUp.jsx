@@ -1,6 +1,21 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import { notification } from "antd";
+import axios from "axios";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { Link, useHistory } from "react-router-dom";
+import { io } from "socket.io-client";
+import { BACKEND_URL } from "../constants";
+import { setAuth, setSocket, setUser } from "../redux/actions/actions";
+
 const SignUp = () => {
+  const [repass, setRepass] = useState("");
+  const [data, setData] = useState({
+    email: "",
+    name: "",
+    password: "",
+  });
+  const dispatch = useDispatch();
+  const history = useHistory();
   return (
     <div className="w-screen h-screen bg-gray-200 flex justify-center">
       <div className="bg-white w-full md:w-3/4 lg:w-3/4 h-full shadow-xl">
@@ -57,44 +72,95 @@ const SignUp = () => {
             </div>
             <div className="p-6">
               <div className="flex flex-col mb-2">
-                <div className=" relative ">
-                  <input
-                    type="text"
-                    className=" rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                    placeholder="Full Name"
-                  />
-                </div>
+                <input
+                  value={data.name}
+                  onChange={(e) => {
+                    setData((d) => ({
+                      ...d,
+                      name: e.target.value,
+                    }));
+                  }}
+                  type="text"
+                  className=" rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                  placeholder="Full Name"
+                />
               </div>
               <div className="flex flex-col mb-2">
-                <div className=" relative ">
-                  <input
-                    type="email"
-                    className=" rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                    name="email"
-                    placeholder="Email"
-                  />
-                </div>
+                <input
+                  value={data.email}
+                  onChange={(e) => {
+                    setData((d) => ({
+                      ...d,
+                      email: e.target.value,
+                    }));
+                  }}
+                  type="email"
+                  className=" rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                  name="email"
+                  placeholder="Email"
+                />
               </div>
               <div className="flex flex-col mb-2">
-                <div className=" relative ">
-                  <input
-                    type="password"
-                    className=" rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                    placeholder="Password"
-                  />
-                </div>
+                <input
+                  value={data.password}
+                  onChange={(e) => {
+                    setData((d) => ({ ...d, password: e.target.value }));
+                  }}
+                  type="password"
+                  className=" rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                  placeholder="Password"
+                />
               </div>
               <div className="flex flex-col mb-2">
-                <div className=" relative ">
-                  <input
-                    type="password"
-                    className=" rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                    placeholder="Re-enter Password"
-                  />
-                </div>
+                <input
+                  value={repass}
+                  onChange={(e) => {
+                    setRepass(e.target.value);
+                  }}
+                  type="password"
+                  className=" rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                  placeholder="Re-enter Password"
+                />
               </div>
               <div className="flex w-full my-4 justify-center">
-                <button className="py-2 px-4  bg-green-400 hover:bg-green-500 focus:ring-green-300 focus:ring-offset-green-200 text-white w-1/2 transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg ">
+                <button
+                  onClick={() => {
+                    if (repass === data.password) {
+                      axios
+                        .post(`${BACKEND_URL}api/v1/userauth/signup`, data)
+                        .then((res) => {
+                          if (res.data.res) {
+                            document.cookie = "jwt=" + res.data.jwt;
+                            notification.success({
+                              message: "Success",
+                              description: res.data.msg,
+                            });
+                            dispatch(setUser(res.data.userData));
+                            dispatch(setAuth(true));
+                            const socket = io(`${BACKEND_URL}`, {
+                              transports: ["websocket"],
+                            });
+                            socket.emit("USER_ID", res.data.userData._id);
+                            dispatch(setSocket(socket));
+                            history.push("/myaccount");
+                          } else {
+                            res.data.errors.forEach((err) => {
+                              notification.error({
+                                message: "Failed",
+                                description: err,
+                              });
+                            });
+                          }
+                        });
+                    } else {
+                      notification.error({
+                        message: "Invalid form",
+                        description: "Password does not match",
+                      });
+                    }
+                  }}
+                  className="py-2 px-4  bg-green-400 hover:bg-green-500 focus:ring-green-300 focus:ring-offset-green-200 text-white w-1/2 transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg "
+                >
                   Sign Up
                 </button>
               </div>
