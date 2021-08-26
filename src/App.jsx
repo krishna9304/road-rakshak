@@ -10,7 +10,10 @@ import { useEffect, useState } from "react";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import SignUp from "./pages/signUp";
 import SignIn from "./pages/signIn";
-import Dashboard from "./pages/dashboard";
+import MyAccount from "./pages/myaccount";
+import FileAComplaint from "./pages/fileAComplaint";
+import Travel from "./pages/travel";
+import News from "./pages/news";
 import { notification } from "antd";
 
 function App() {
@@ -88,7 +91,7 @@ function App() {
           <Route
             path={"/signup"}
             render={() => {
-              if (globalState.auth) return <Dashboard />;
+              if (globalState.auth) return <MyAccount />;
               return <SignUp />;
             }}
           />
@@ -99,9 +102,27 @@ function App() {
             }}
           />
           <Route
-            path={"/dashboard"}
+            path={"/myaccount"}
             render={() => {
-              return <Dashboard />;
+              return <MyAccount />;
+            }}
+          />
+          <Route
+            path={"/fileacomplaint"}
+            render={() => {
+              return <FileAComplaint />;
+            }}
+          />
+          <Route
+            path={"/travel"}
+            render={() => {
+              return <Travel />;
+            }}
+          />
+          <Route
+            path={"/news"}
+            render={() => {
+              return <News />;
             }}
           />
         </Switch>

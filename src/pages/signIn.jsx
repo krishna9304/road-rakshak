@@ -1,6 +1,20 @@
-import { Link } from "react-router-dom";
+import { notification } from "antd";
+import axios from "axios";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { Link, useHistory } from "react-router-dom";
+import { io } from "socket.io-client";
+import { BACKEND_URL } from "../constants";
+import { setAuth, setSocket, setUser } from "../redux/actions/actions";
 
 const SignIn = () => {
+  const [userData, setUserData] = useState({
+    password: "",
+    email: "",
+  });
+  const dispatch = useDispatch();
+  const history = useHistory();
+  const [showPass, setShowPass] = useState(false);
   return (
     <div className="w-screen h-screen bg-gray-200 flex justify-center">
       <div className="bg-white w-full md:w-3/4 lg:w-3/4 h-full shadow-xl">
@@ -61,10 +75,16 @@ const SignIn = () => {
                     </svg>
                   </span>
                   <input
-                    type="text"
-                    id="sign-in-email"
-                    className=" rounded-r-lg flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                    placeholder="Your email"
+                    onChange={(e) => {
+                      setUserData((u) => ({
+                        ...u,
+                        email: e.target.value,
+                      }));
+                    }}
+                    value={userData.email}
+                    type="email"
+                    className="rounded-r-lg flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
+                    placeholder="Email"
                   />
                 </div>
               </div>
@@ -82,6 +102,13 @@ const SignIn = () => {
                     </svg>
                   </span>
                   <input
+                    onChange={(e) => {
+                      setUserData((u) => ({
+                        ...u,
+                        password: e.target.value,
+                      }));
+                    }}
+                    value={userData.password}
                     type="password"
                     id="sign-in-email"
                     className=" rounded-r-lg flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
@@ -90,7 +117,37 @@ const SignIn = () => {
                 </div>
               </div>
               <div className="flex w-full">
-                <button className="py-2 px-4  bg-green-400 hover:bg-green-500 focus:ring-green-300 focus:ring-offset-green-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg ">
+                <button
+                  onClick={() => {
+                    axios
+                      .post(`${BACKEND_URL}api/v1/userauth/signin`, userData)
+                      .then((res) => {
+                        if (res.data.res) {
+                          document.cookie = "jwt=" + res.data.jwt;
+                          notification.success({
+                            message: "Success",
+                            description: res.data.msg,
+                          });
+                          dispatch(setUser(res.data.userData));
+                          dispatch(setAuth(true));
+                          const socket = io(`${BACKEND_URL}`, {
+                            transports: ["websocket"],
+                          });
+                          socket.emit("USER_ID", res.data.userData._id);
+                          dispatch(setSocket(socket));
+                          history.push("/myaccount");
+                        } else {
+                          res.data.errors.forEach((err) => {
+                            notification.error({
+                              message: "Failed",
+                              description: err,
+                            });
+                          });
+                        }
+                      });
+                  }}
+                  className="py-2 px-4  bg-green-400 hover:bg-green-500 focus:ring-green-300 focus:ring-offset-green-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg "
+                >
                   Sign In
                 </button>
               </div>
@@ -102,7 +159,7 @@ const SignIn = () => {
               >
                 <span>You don&#x27;t have an account? </span>
                 <span className="text-xs font-semibold text-blue-500 underline hover:text-blue-700">
-                  &nbsp;Sign In
+                  &nbsp;Sign Up
                 </span>
               </Link>
             </div>
