@@ -5,7 +5,6 @@ import { useDispatch, useSelector } from "react-redux";
 import HomeLayout from "../components/HomeLayout/Layout";
 import { setAuth, setSocket, setUser } from "../redux/actions/actions";
 import { BACKEND_URL } from "../constants";
-import Draggable from "react-draggable";
 
 const MyAccount = () => {
   const user = useSelector((state) => state.user);
@@ -155,6 +154,31 @@ const MyAccount = () => {
           </div>
           <span className="text-center w-full flex justify-center items-center">
             <button
+              onClick={() => {
+                if (user.isVerified) {
+                  notification.error({
+                    message: "Failed",
+                    description: "User already verified",
+                  });
+                } else {
+                  axios
+                    .post(`${BACKEND_URL}api/v1/user/verifyuser`, {
+                      email: user.email,
+                    })
+                    .then((res) => {
+                      if (res.data.res) {
+                        notification.success({
+                          message: "Success",
+                          description: "Mail has been sent.",
+                        });
+                        notification.info({
+                          message: "Info",
+                          description: "Check your mail for verification link.",
+                        });
+                      }
+                    });
+                }
+              }}
               disabled={user.isVerified}
               className={
                 user.isVerified
@@ -195,6 +219,7 @@ const MyAccount = () => {
                     description: "Personal info changed",
                   });
                   document.cookie = res.data.token;
+                  dispatch(setUser(res.data.userData));
                 } else {
                   res.data.errors.forEach((err) => {
                     notification.error({

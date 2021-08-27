@@ -16,15 +16,16 @@ import Travel from "./pages/travel";
 import News from "./pages/news";
 import { notification } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
+import VerifyUser from "./pages/verifyuser";
 
 function App() {
   let [authDone, setAuthDone] = useState(false);
   let dispatch = useDispatch();
   const globalState = useSelector((state) => state);
   let authUser = () => {
-    if (document.cookie !== null && document.cookie !== "") {
+    if (document.cookie) {
       let token = extractCookies(document.cookie).jwt;
-      if (token !== undefined || token !== null || token !== "") {
+      if (token) {
         console.log(token);
         axios
           .post(`${BACKEND_URL}api/v1/userAuth/verifyToken`, {
@@ -104,6 +105,9 @@ function App() {
             {globalState.auth ? <Travel /> : <SignUp />}
           </Route>
           <Route path="/news">{globalState.auth ? <News /> : <SignUp />}</Route>
+          <Route path="/verifyuser/:token">
+            <VerifyUser />
+          </Route>
         </Switch>
       </BrowserRouter>
     </div>
