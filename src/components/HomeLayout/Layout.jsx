@@ -53,7 +53,7 @@ const HomeLayout = ({ header, children }) => {
         </div>
       </Sider>
       <Layout>
-        <Header className="select-none site-layout-sub-header-background flex justify-center items-center text-lg font-bold">
+        <Header className="uppercase select-none site-layout-sub-header-background flex justify-center items-center text-lg font-bold">
           {header}
         </Header>
         <div className="overflow-y-auto mx-8 my-6">

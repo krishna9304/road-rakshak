@@ -8,6 +8,32 @@ import { BACKEND_URL } from "../constants";
 import { setAuth, setSocket, setUser } from "../redux/actions/actions";
 
 const SignIn = () => {
+  const signin = () => {
+    axios.post(`${BACKEND_URL}api/v1/userauth/signin`, userData).then((res) => {
+      if (res.data.res) {
+        document.cookie = "jwt=" + res.data.jwt;
+        notification.success({
+          message: "Success",
+          description: res.data.msg,
+        });
+        dispatch(setUser(res.data.userData));
+        dispatch(setAuth(true));
+        const socket = io(`${BACKEND_URL}`, {
+          transports: ["websocket"],
+        });
+        socket.emit("USER_ID", res.data.userData._id);
+        dispatch(setSocket(socket));
+        history.push("/myaccount");
+      } else {
+        res.data.errors.forEach((err) => {
+          notification.error({
+            message: "Failed",
+            description: err,
+          });
+        });
+      }
+    });
+  };
   const [userData, setUserData] = useState({
     password: "",
     email: "",
@@ -75,6 +101,11 @@ const SignIn = () => {
                     </svg>
                   </span>
                   <input
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        signin();
+                      }
+                    }}
                     onChange={(e) => {
                       setUserData((u) => ({
                         ...u,
@@ -90,7 +121,12 @@ const SignIn = () => {
               </div>
               <div className="flex flex-col mb-6">
                 <div className="flex relative ">
-                  <span className="rounded-l-md inline-flex  items-center px-3 border-t bg-white border-l border-b  border-gray-300 text-gray-500 shadow-sm text-sm">
+                  <span
+                    onClick={() => {
+                      setShowPass((sp) => !sp);
+                    }}
+                    className="rounded-l-md inline-flex  items-center px-3 border-t bg-white border-l border-b  border-gray-300 text-gray-500 shadow-sm text-sm"
+                  >
                     <svg
                       width="15"
                       height="15"
@@ -102,6 +138,11 @@ const SignIn = () => {
                     </svg>
                   </span>
                   <input
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        signin();
+                      }
+                    }}
                     onChange={(e) => {
                       setUserData((u) => ({
                         ...u,
@@ -109,7 +150,7 @@ const SignIn = () => {
                       }));
                     }}
                     value={userData.password}
-                    type="password"
+                    type={showPass ? "text" : "password"}
                     id="sign-in-email"
                     className=" rounded-r-lg flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
                     placeholder="Your password"
@@ -119,32 +160,7 @@ const SignIn = () => {
               <div className="flex w-full">
                 <button
                   onClick={() => {
-                    axios
-                      .post(`${BACKEND_URL}api/v1/userauth/signin`, userData)
-                      .then((res) => {
-                        if (res.data.res) {
-                          document.cookie = "jwt=" + res.data.jwt;
-                          notification.success({
-                            message: "Success",
-                            description: res.data.msg,
-                          });
-                          dispatch(setUser(res.data.userData));
-                          dispatch(setAuth(true));
-                          const socket = io(`${BACKEND_URL}`, {
-                            transports: ["websocket"],
-                          });
-                          socket.emit("USER_ID", res.data.userData._id);
-                          dispatch(setSocket(socket));
-                          history.push("/myaccount");
-                        } else {
-                          res.data.errors.forEach((err) => {
-                            notification.error({
-                              message: "Failed",
-                              description: err,
-                            });
-                          });
-                        }
-                      });
+                    signin();
                   }}
                   className="py-2 px-4  bg-green-400 hover:bg-green-500 focus:ring-green-300 focus:ring-offset-green-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg "
                 >

@@ -15,6 +15,7 @@ import FileAComplaint from "./pages/fileAComplaint";
 import Travel from "./pages/travel";
 import News from "./pages/news";
 import { notification } from "antd";
+import { LoadingOutlined } from "@ant-design/icons";
 
 function App() {
   let [authDone, setAuthDone] = useState(false);
@@ -73,58 +74,36 @@ function App() {
     // eslint-disable-next-line
   }, []);
 
-  if (authDone === false) {
-    return <div>loading...</div>;
+  if (!authDone) {
+    return (
+      <div className="uppercase w-full h-screen flex justify-center items-center text-center text-3xl font-bold">
+        loading...&nbsp; <LoadingOutlined />
+      </div>
+    );
   }
   return (
     <div className="App">
       <BrowserRouter>
         <Switch>
-          <Route
-            path={"/"}
-            exact
-            render={() => {
-              if (globalState.auth) return <Map />;
-              return <SignUp />;
-            }}
-          />
-          <Route
-            path={"/signup"}
-            render={() => {
-              if (globalState.auth) return <MyAccount />;
-              return <SignUp />;
-            }}
-          />
-          <Route
-            path={"/signin"}
-            render={() => {
-              return <SignIn />;
-            }}
-          />
-          <Route
-            path={"/myaccount"}
-            render={() => {
-              return <MyAccount />;
-            }}
-          />
-          <Route
-            path={"/fileacomplaint"}
-            render={() => {
-              return <FileAComplaint />;
-            }}
-          />
-          <Route
-            path={"/travel"}
-            render={() => {
-              return <Travel />;
-            }}
-          />
-          <Route
-            path={"/news"}
-            render={() => {
-              return <News />;
-            }}
-          />
+          <Route path="/" exact>
+            {globalState.auth ? <Map /> : <SignUp />}
+          </Route>
+          <Route path="/signup">
+            {globalState.auth ? <MyAccount /> : <SignUp />}
+          </Route>
+          <Route path="/signin">
+            {globalState.auth ? <MyAccount /> : <SignIn />}
+          </Route>
+          <Route path="/myaccount">
+            {globalState.auth ? <MyAccount /> : <SignUp />}
+          </Route>
+          <Route path="/fileacomplaint">
+            {globalState.auth ? <FileAComplaint /> : <SignUp />}
+          </Route>
+          <Route path="/travel">
+            {globalState.auth ? <Travel /> : <SignUp />}
+          </Route>
+          <Route path="/news">{globalState.auth ? <News /> : <SignUp />}</Route>
         </Switch>
       </BrowserRouter>
     </div>

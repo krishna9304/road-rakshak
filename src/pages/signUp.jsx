@@ -8,6 +8,39 @@ import { BACKEND_URL } from "../constants";
 import { setAuth, setSocket, setUser } from "../redux/actions/actions";
 
 const SignUp = () => {
+  const signup = () => {
+    if (repass === data.password) {
+      axios.post(`${BACKEND_URL}api/v1/userauth/signup`, data).then((res) => {
+        if (res.data.res) {
+          document.cookie = "jwt=" + res.data.jwt;
+          notification.success({
+            message: "Success",
+            description: res.data.msg,
+          });
+          dispatch(setUser(res.data.userData));
+          dispatch(setAuth(true));
+          const socket = io(`${BACKEND_URL}`, {
+            transports: ["websocket"],
+          });
+          socket.emit("USER_ID", res.data.userData._id);
+          dispatch(setSocket(socket));
+          history.push("/myaccount");
+        } else {
+          res.data.errors.forEach((err) => {
+            notification.error({
+              message: "Failed",
+              description: err,
+            });
+          });
+        }
+      });
+    } else {
+      notification.error({
+        message: "Invalid form",
+        description: "Password does not match",
+      });
+    }
+  };
   const [repass, setRepass] = useState("");
   const [data, setData] = useState({
     email: "",
@@ -73,6 +106,11 @@ const SignUp = () => {
             <div className="p-6">
               <div className="flex flex-col mb-2">
                 <input
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      signup();
+                    }
+                  }}
                   value={data.name}
                   onChange={(e) => {
                     setData((d) => ({
@@ -87,6 +125,11 @@ const SignUp = () => {
               </div>
               <div className="flex flex-col mb-2">
                 <input
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      signup();
+                    }
+                  }}
                   value={data.email}
                   onChange={(e) => {
                     setData((d) => ({
@@ -102,6 +145,11 @@ const SignUp = () => {
               </div>
               <div className="flex flex-col mb-2">
                 <input
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      signup();
+                    }
+                  }}
                   value={data.password}
                   onChange={(e) => {
                     setData((d) => ({ ...d, password: e.target.value }));
@@ -113,6 +161,11 @@ const SignUp = () => {
               </div>
               <div className="flex flex-col mb-2">
                 <input
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      signup();
+                    }
+                  }}
                   value={repass}
                   onChange={(e) => {
                     setRepass(e.target.value);
@@ -125,39 +178,7 @@ const SignUp = () => {
               <div className="flex w-full my-4 justify-center">
                 <button
                   onClick={() => {
-                    if (repass === data.password) {
-                      axios
-                        .post(`${BACKEND_URL}api/v1/userauth/signup`, data)
-                        .then((res) => {
-                          if (res.data.res) {
-                            document.cookie = "jwt=" + res.data.jwt;
-                            notification.success({
-                              message: "Success",
-                              description: res.data.msg,
-                            });
-                            dispatch(setUser(res.data.userData));
-                            dispatch(setAuth(true));
-                            const socket = io(`${BACKEND_URL}`, {
-                              transports: ["websocket"],
-                            });
-                            socket.emit("USER_ID", res.data.userData._id);
-                            dispatch(setSocket(socket));
-                            history.push("/myaccount");
-                          } else {
-                            res.data.errors.forEach((err) => {
-                              notification.error({
-                                message: "Failed",
-                                description: err,
-                              });
-                            });
-                          }
-                        });
-                    } else {
-                      notification.error({
-                        message: "Invalid form",
-                        description: "Password does not match",
-                      });
-                    }
+                    signup();
                   }}
                   className="py-2 px-4  bg-green-400 hover:bg-green-500 focus:ring-green-300 focus:ring-offset-green-200 text-white w-1/2 transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg "
                 >
