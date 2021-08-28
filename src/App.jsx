@@ -17,6 +17,7 @@ import News from "./pages/news";
 import { notification } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import VerifyUser from "./pages/verifyuser";
+import NotVerified from "./pages/notverified";
 
 function App() {
   let [authDone, setAuthDone] = useState(false);
@@ -24,7 +25,8 @@ function App() {
   const globalState = useSelector((state) => state);
   let authUser = () => {
     if (document.cookie) {
-      let token = extractCookies(document.cookie).jwt;
+      let token;
+      token = extractCookies(document.cookie).jwt;
       if (token) {
         console.log(token);
         axios
@@ -34,6 +36,7 @@ function App() {
           .then((res) => {
             try {
               if (res.data.res) {
+                document.cookie = res.data.newToken;
                 dispatch(setAuth(true));
                 dispatch(setUser(res.data.userData));
                 const socket = io(`${BACKEND_URL}`, {
@@ -87,7 +90,7 @@ function App() {
       <BrowserRouter>
         <Switch>
           <Route path="/" exact>
-            {globalState.auth ? <Map /> : <SignUp />}
+            {globalState.auth || 1 ? <Map /> : <SignUp />}
           </Route>
           <Route path="/signup">
             {globalState.auth ? <MyAccount /> : <SignUp />}
@@ -99,10 +102,26 @@ function App() {
             {globalState.auth ? <MyAccount /> : <SignUp />}
           </Route>
           <Route path="/fileacomplaint">
-            {globalState.auth ? <FileAComplaint /> : <SignUp />}
+            {globalState.auth ? (
+              globalState.user.isVerified ? (
+                <FileAComplaint />
+              ) : (
+                <NotVerified />
+              )
+            ) : (
+              <SignUp />
+            )}
           </Route>
           <Route path="/travel">
-            {globalState.auth ? <Travel /> : <SignUp />}
+            {globalState.auth ? (
+              globalState.user.isVerified ? (
+                <Travel />
+              ) : (
+                <NotVerified />
+              )
+            ) : (
+              <SignUp />
+            )}
           </Route>
           <Route path="/news">{globalState.auth ? <News /> : <SignUp />}</Route>
           <Route path="/verifyuser/:token">

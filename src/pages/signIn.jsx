@@ -173,8 +173,8 @@ const SignIn = () => {
                 to="/signup"
                 className="inline-flex items-center text-xs font-thin text-center text-gray-500 hover:text-gray-700 dark:text-gray-100 dark:hover:text-white"
               >
-                <span>You don&#x27;t have an account? </span>
-                <span className="text-xs font-semibold text-blue-500 underline hover:text-blue-700">
+                <span>Don&#x27;t have an account? </span>
+                <span className="text-sm font-light text-blue-500 underline hover:text-blue-700">
                   &nbsp;Sign Up
                 </span>
               </Link>

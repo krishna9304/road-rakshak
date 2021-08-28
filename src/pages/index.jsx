@@ -49,9 +49,9 @@ const Map = () => {
           // });
         },
         console.error,
-        { enableHighAccuracy: true }
+        { enableHighAccuracy: true, maximumAge: 30000, timeout: 27000 }
       );
-    }, 3000);
+    }, 100);
     // eslint-disable-next-line
   }, []);
 

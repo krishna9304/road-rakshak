@@ -52,7 +52,7 @@ const SignUp = () => {
   return (
     <div className="w-screen h-screen bg-gray-200 flex justify-center">
       <div className="bg-white w-full md:w-3/4 lg:w-3/4 h-full shadow-xl">
-        <div className="w-full h-1/6 bg-green-400 shadow-lg flex justify-center items-center text-6xl text-white font-extralight">
+        <div className="w-full h-1/6 bg-green-400 shadow-lg flex justify-center items-center text-4xl md:text-6xl text-white font-extralight">
           Road Rakshak
         </div>
         <div className="h-5/6 flex justify-center items-center w-full">
@@ -61,7 +61,7 @@ const SignUp = () => {
               Create a new account
             </div>
             <span className="justify-center text-sm text-center text-gray-500 flex-items-center dark:text-gray-400">
-              Already have an account ?
+              Already have an account?&nbsp;
               <Link
                 to="/signin"
                 className="text-sm text-blue-500 underline hover:text-blue-700"
