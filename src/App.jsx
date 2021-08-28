@@ -90,7 +90,7 @@ function App() {
       <BrowserRouter>
         <Switch>
           <Route path="/" exact>
-            {globalState.auth || 1 ? <Map /> : <SignUp />}
+            {globalState.auth ? <Map /> : <SignUp />}
           </Route>
           <Route path="/signup">
             {globalState.auth ? <MyAccount /> : <SignUp />}

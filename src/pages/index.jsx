@@ -1,11 +1,8 @@
 import { useEffect, useState } from "react";
 import { FullscreenControl, Marker, ScaleControl } from "react-map-gl";
 import Mapbox from "react-map-gl";
-import { useSelector } from "react-redux";
 
 const Map = () => {
-  let globalState = useSelector((state) => state);
-  let socket = globalState.socket;
   const [target, setTarget] = useState({
     latitude: 0,
     longitude: 0,
