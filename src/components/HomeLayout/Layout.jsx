@@ -12,7 +12,7 @@ import { NavLink } from "react-router-dom";
 const { Header, Sider } = Layout;
 const HomeLayout = ({ header, children }) => {
   return (
-    <Layout className="w-screen h-screen">
+    <Layout className="w-full h-screen">
       <Sider breakpoint="lg" collapsedWidth="0">
         <div className="select-none text-2xl font-extralight text-white p-4">
           Road Rakshak
