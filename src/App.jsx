@@ -3,7 +3,6 @@ import { io } from "socket.io-client";
 import "./App.css";
 import { BACKEND_URL } from "./constants";
 import Map from "./pages";
-import { extractCookies } from "./utilities/cookie";
 import { setAuth, setSocket, setUser } from "./redux/actions/actions";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -18,17 +17,18 @@ import { notification } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import VerifyUser from "./pages/verifyuser";
 import NotVerified from "./pages/notverified";
+import { useCookies } from "react-cookie";
 
 function App() {
   let [authDone, setAuthDone] = useState(false);
+  const [cookies, setCookie] = useCookies(["jwt"]);
   let dispatch = useDispatch();
   const globalState = useSelector((state) => state);
   let authUser = () => {
     if (document.cookie) {
       let token;
-      token = extractCookies(document.cookie).jwt;
+      token = cookies.jwt;
       if (token) {
-        console.log(token);
         axios
           .post(`${BACKEND_URL}api/v1/userAuth/verifyToken`, {
             token: token,

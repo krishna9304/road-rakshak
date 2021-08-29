@@ -13,6 +13,7 @@
     "axios": "^0.21.1",
     "deck.gl": "^8.5.4",
     "react": "^17.0.2",
+    "react-cookie": "^4.1.1",
     "react-dom": "^17.0.2",
     "react-draggable": "^4.4.3",
     "react-map-gl": "^6.1.16",
