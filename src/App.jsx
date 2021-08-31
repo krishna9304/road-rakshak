@@ -18,6 +18,7 @@ import { notification } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import VerifyUser from "./pages/verifyuser";
 import NotVerified from "./pages/notverified";
+import Homepage from "./pages/homepage";
 
 function App() {
   let [authDone, setAuthDone] = useState(false);
@@ -90,7 +91,7 @@ function App() {
       <BrowserRouter>
         <Switch>
           <Route path="/" exact>
-            {globalState.auth ? <Map /> : <SignUp />}
+            {globalState.auth || 1 ? <Homepage /> : <SignUp />}
           </Route>
           <Route path="/signup">
             {globalState.auth ? <MyAccount /> : <SignUp />}

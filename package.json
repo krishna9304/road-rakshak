@@ -12,6 +12,7 @@
     "antd": "^4.16.13",
     "axios": "^0.21.1",
     "deck.gl": "^8.5.4",
+    "dotenv": "^10.0.0",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-draggable": "^4.4.3",
