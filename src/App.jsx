@@ -2,7 +2,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
 import "./App.css";
 import { BACKEND_URL } from "./constants";
-import Map from "./pages";
 import { extractCookies } from "./utilities/cookie";
 import { setAuth, setSocket, setUser } from "./redux/actions/actions";
 import axios from "axios";
