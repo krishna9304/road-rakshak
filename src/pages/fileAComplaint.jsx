@@ -66,9 +66,9 @@ const FileAComplaint = () => {
   };
   return (
     <HomeLayout header={"File a complaint"}>
-      <div className="md:py-32 w-full h-full flex justify-center items-center">
+      <div className="w-full flex justify-center items-center">
         <div className="flex w-full max-w-sm space-x-3">
-          <div className="w-full max-w-2xl px-5 py-10 m-auto mt-10 bg-white rounded-lg dark:bg-gray-800 shadow-xl  border-t-4 border-green-400">
+          <div className="w-full max-w-2xl px-5 py-10 m-auto bg-white rounded-lg dark:bg-gray-800 shadow-xl  border-t-4 border-green-400">
             <div className="mb-6 text-3xl font-light text-center text-gray-800 dark:text-white">
               Please fill the form!
             </div>
