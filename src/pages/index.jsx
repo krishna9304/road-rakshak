@@ -16,6 +16,8 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
     zoom: 16,
   });
 
+  const [destination, setDestination] = useState({});
+
   const directions = useRef(null);
 
   useEffect(() => {
@@ -25,7 +27,6 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
       center: [viewport.longitude, viewport.latitude],
       zoom: viewport.zoom,
     });
-
     directions.current = new MapboxDirections({
       accessToken: mapboxgl.accessToken,
       unit: "metric",
@@ -35,7 +36,6 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
         instructions: false,
       },
     });
-
     map.current.addControl(new mapboxgl.FullscreenControl(), "top-left");
     map.current.addControl(directions.current, "top-right");
     map.current.on("move", () => {
@@ -72,7 +72,23 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
           map.current.setZoom(lastZoom);
         }, 0);
       }, console.error);
-    }, 10000);
+      if (directions.current) {
+        const dest = directions.current.getDestination();
+
+        setDestination((d) => {
+          if (typeof d.geometry !== "undefined") {
+            if (
+              dest.geometry.coordinates[0] == d.geometry.coordinates[0] &&
+              dest.geometry.coordinates[1] == d.geometry.coordinates[1]
+            ) {
+              map.current.setPitch(60);
+              console.log("Lola");
+            }
+          }
+          return dest;
+        });
+      }
+    }, 3000);
   }, []);
 
   // useEffect(() => {
