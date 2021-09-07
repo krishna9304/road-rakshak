@@ -40,9 +40,11 @@ const FileAComplaint = () => {
         config
       );
       if (!res.data.res) {
-        notification.error({
-          message: "Failed",
-          description: "There is some error!",
+        res.data.errors.forEach((err) => {
+          notification.error({
+            message: "Failed",
+            description: err,
+          });
         });
       } else {
         notification.success({
