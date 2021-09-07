@@ -7,10 +7,23 @@ import "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions.css";
 import { BACKEND_URL, MAPBOX_API_KEY } from "../constants";
 import axios from "axios";
 import { Marker } from "react-map-gl";
+import { useSpeechSynthesis } from "react-speech-kit";
+import { useSelector } from "react-redux";
 
 mapboxgl.accessToken = MAPBOX_API_KEY;
 
 const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
+  const getHurdles = () => {
+    const types = {};
+    hurdles.forEach((h) => {
+      if (!types[h.hurdleType]) {
+        types[h.hurdleType] = 0;
+      }
+      types[h.hurdleType] += 1;
+    });
+    return types;
+  };
+
   const mapContainer = useRef(null);
   const map = useRef(null);
   const [viewport, setViewport] = useState({
@@ -21,6 +34,8 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
   const [destination, setDestination] = useState({});
 
   const directions = useRef(null);
+  const { speak, voices } = useSpeechSynthesis();
+  const user = useSelector((state) => state.user);
 
   useEffect(() => {
     map.current = new mapboxgl.Map({
@@ -76,26 +91,28 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
       }, console.error);
     }, 3000);
     directions.current.on("destination", () => {
-      axios.post(`${BACKEND_URL}api/v1/report/getverified`).then((res) => {
-        if (res.data.res) {
-          console.log(res.data);
-          setHurdles(() => {
-            return res.data.reports.map((hurdle) => {
-              const container = document.createElement("div");
-              container.classList.add("h-8");
-              container.classList.add("w-8");
-              container.classList.add("bg-red-500");
-              container.classList.add("rounded-full");
-              let m = new mapboxgl.Marker(container)
-                .setLngLat([
-                  hurdle.locationCoords.longitude,
-                  hurdle.locationCoords.latitude,
-                ])
-                .addTo(map.current);
+      if (!hurdles.length) {
+        axios.post(`${BACKEND_URL}api/v1/report/getverified`).then((res) => {
+          if (res.data.res) {
+            setHurdles(() => {
+              return res.data.reports.map((hurdle) => {
+                const container = document.createElement("div");
+                container.classList.add("h-8");
+                container.classList.add("w-8");
+                container.classList.add("bg-red-500");
+                container.classList.add("rounded-full");
+                let m = new mapboxgl.Marker(container)
+                  .setLngLat([
+                    hurdle.locationCoords.longitude,
+                    hurdle.locationCoords.latitude,
+                  ])
+                  .addTo(map.current);
+                return hurdle;
+              });
             });
-          });
-        }
-      });
+          }
+        });
+      }
     });
     return () => {
       map.current.remove();
@@ -104,16 +121,54 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <div>
+    <div
+      style={{
+        height: "80vh",
+      }}
+    >
       <div
-        ref={mapContainer}
         style={{
-          height: "100vh",
+          height: "70vh",
         }}
-        className="mapContainer select-none"
+        ref={mapContainer}
+        className="mapContainer select-none h-full flex"
       />
-      <div className="w-full h-1/4 fixed bottom-0 left-0 bg-gradient-to-t from-white via-white to-transparent flex justify-center items-center">
-        <div className="font-bold text-3xl "> {"26 kmph"}</div>
+      <div
+        style={{
+          height: "10vh",
+        }}
+        className="w-full flex justify-center items-center"
+      >
+        <div
+          onClick={() => {
+            speak({
+              text: `Hello, ${user.name}. There are total ${
+                hurdles.length
+              } hurdles on the way.\
+              ${(() => {
+                const types = getHurdles();
+                let finalString = "";
+                let i = 0;
+                for (let key in types) {
+                  finalString +=
+                    types[key] +
+                    " " +
+                    key +
+                    (types[key] === 1 ? "" : "s") +
+                    (i === Object.keys(types).length - 1 ? "" : ", and ");
+                  i++;
+                }
+                console.log(finalString);
+                return finalString;
+              })()}`,
+              voice: voices[2],
+            });
+            console.log(getHurdles());
+          }}
+          className="w-1/2 md:w-1/3 bg-blue-600 text-white h-10 flex justify-center items-center rounded-3xl font-bold shadow-lg hover:bg-blue-800 cursor-pointer select-none"
+        >
+          Start Navigation
+        </div>
       </div>
     </div>
   );

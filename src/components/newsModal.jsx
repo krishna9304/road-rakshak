@@ -82,9 +82,11 @@ const NewsModal = ({ setOpen, img, description, headline, references }) => {
                         <ul className="text-xs text-gray-500 line-clamp-3">
                           {references.map((item) => {
                             return (
-                              <a href={item}>
-                                <li>{item}</li>
-                              </a>
+                              <li>
+                                <a target="_blank" rel="noreferrer" href={item}>
+                                  {item}
+                                </a>
+                              </li>
                             );
                           })}
                         </ul>
