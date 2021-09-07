@@ -4,7 +4,9 @@ import mapboxgl from "mapbox-gl";
 import MapboxDirections from "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions.css";
-import { MAPBOX_API_KEY } from "../constants";
+import { BACKEND_URL, MAPBOX_API_KEY } from "../constants";
+import axios from "axios";
+import { Marker } from "react-map-gl";
 
 mapboxgl.accessToken = MAPBOX_API_KEY;
 
@@ -15,7 +17,7 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
     ...currPos,
     zoom: 16,
   });
-
+  const [hurdles, setHurdles] = useState([]);
   const [destination, setDestination] = useState({});
 
   const directions = useRef(null);
@@ -24,14 +26,14 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: "mapbox://styles/mapbox/streets-v11",
-      center: [viewport.longitude, viewport.latitude],
+      center: [viewport.longitude || 0, viewport.latitude || 0],
       zoom: viewport.zoom,
     });
     directions.current = new MapboxDirections({
       accessToken: mapboxgl.accessToken,
       unit: "metric",
       profile: "mapbox/driving",
-      // interactive: false,
+      interactive: false,
       controls: {
         instructions: false,
       },
@@ -63,7 +65,7 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
       console.error,
       { enableHighAccuracy: true }
     );
-    setInterval(() => {
+    let interval = setInterval(() => {
       navigator.geolocation.getCurrentPosition((pos) => {
         const lastZoom = map.current.getZoom();
         const center = [pos.coords.longitude, pos.coords.latitude];
@@ -72,29 +74,35 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
           map.current.setZoom(lastZoom);
         }, 0);
       }, console.error);
-      if (directions.current) {
-        const dest = directions.current.getDestination();
-
-        setDestination((d) => {
-          if (typeof d.geometry !== "undefined") {
-            if (
-              dest.geometry.coordinates[0] == d.geometry.coordinates[0] &&
-              dest.geometry.coordinates[1] == d.geometry.coordinates[1]
-            ) {
-              map.current.setPitch(60);
-              console.log("Lola");
-            }
-          }
-          return dest;
-        });
-      }
     }, 3000);
+    directions.current.on("destination", () => {
+      axios.post(`${BACKEND_URL}api/v1/report/getverified`).then((res) => {
+        if (res.data.res) {
+          console.log(res.data);
+          setHurdles(() => {
+            return res.data.reports.map((hurdle) => {
+              const container = document.createElement("div");
+              container.classList.add("h-8");
+              container.classList.add("w-8");
+              container.classList.add("bg-red-500");
+              container.classList.add("rounded-full");
+              let m = new mapboxgl.Marker(container)
+                .setLngLat([
+                  hurdle.locationCoords.longitude,
+                  hurdle.locationCoords.latitude,
+                ])
+                .addTo(map.current);
+            });
+          });
+        }
+      });
+    });
+    return () => {
+      map.current.remove();
+      clearInterval(interval);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // useEffect(() => {
-  //   console.log(currPos, directions.current);
-  //   return () => {};
-  // }, [currPos]);
   return (
     <div>
       <div
