@@ -2,8 +2,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { io } from "socket.io-client";
 import "./App.css";
 import { BACKEND_URL } from "./constants";
-import { extractCookies } from "./utilities/cookie";
-import Map from "./pages";
 import { setAuth, setSocket, setUser } from "./redux/actions/actions";
 import axios from "axios";
 import { useEffect, useState } from "react";
@@ -92,7 +90,7 @@ function App() {
       <BrowserRouter>
         <Switch>
           <Route path="/" exact>
-            {globalState.auth || 1 ? <Homepage /> : <SignUp />}
+            {globalState.auth ? <Homepage /> : <SignUp />}
           </Route>
           <Route path="/signup">
             {globalState.auth ? <MyAccount /> : <SignUp />}

@@ -31,7 +31,7 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
       accessToken: mapboxgl.accessToken,
       unit: "metric",
       profile: "mapbox/driving",
-      // interactive: false,
+      interactive: false,
       controls: {
         instructions: false,
       },
@@ -78,34 +78,41 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
         setDestination((d) => {
           if (typeof d.geometry !== "undefined") {
             if (
-              dest.geometry.coordinates[0] == d.geometry.coordinates[0] &&
-              dest.geometry.coordinates[1] == d.geometry.coordinates[1]
+              dest.geometry.coordinates[0] === d.geometry.coordinates[0] &&
+              dest.geometry.coordinates[1] === d.geometry.coordinates[1]
             ) {
               map.current.setPitch(60);
-              console.log("Lola");
             }
           }
           return dest;
         });
       }
     }, 3000);
+    // eslint-disable-next-line
   }, []);
 
-  // useEffect(() => {
-  //   console.log(currPos, directions.current);
-  //   return () => {};
-  // }, [currPos]);
   return (
-    <div>
+    <div
+      style={{
+        height: "80vh",
+      }}
+    >
       <div
-        ref={mapContainer}
         style={{
-          height: "100vh",
+          height: "70vh",
         }}
-        className="mapContainer select-none"
+        ref={mapContainer}
+        className="mapContainer select-none h-full flex"
       />
-      <div className="w-full h-1/4 fixed bottom-0 left-0 bg-gradient-to-t from-white via-white to-transparent flex justify-center items-center">
-        <div className="font-bold text-3xl "> {"26 kmph"}</div>
+      <div
+        style={{
+          height: "10vh",
+        }}
+        className="w-full flex justify-center items-center"
+      >
+        <div className="w-1/2 md:w-1/3 bg-blue-600 text-white h-10 flex justify-center items-center rounded-3xl font-bold shadow-lg hover:bg-blue-800 cursor-pointer select-none">
+          Start Navigation
+        </div>
       </div>
     </div>
   );
