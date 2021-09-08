@@ -12,9 +12,11 @@ import { useSelector } from "react-redux";
 mapboxgl.accessToken = MAPBOX_API_KEY;
 
 const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
-  const getHurdles = () => {
+  const [ori, setOri] = useState([0, 0]);
+  const [dest, setDest] = useState([0, 0]);
+  const getHurdles = (hurdl) => {
     const types = {};
-    hurdles.forEach((h) => {
+    hurdl.forEach((h) => {
       if (!types[h.hurdleType]) {
         types[h.hurdleType] = 0;
       }
@@ -23,7 +25,27 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
     return types;
   };
 
-  const done = useRef(false);
+  const speech = (h) => {
+    let text = `Hello, ${user.name}. There are total ${h.length} hurdle${
+      h.length > 1 ? "s" : ""
+    } on the way.\
+      ${(() => {
+        const types = getHurdles(h);
+        let finalString = "";
+        let i = 0;
+        for (let key in types) {
+          finalString +=
+            types[key] +
+            " " +
+            key +
+            (types[key] === 1 ? "" : "s") +
+            (i === Object.keys(types).length - 1 ? "" : ", and ");
+          i++;
+        }
+        return finalString;
+      })()}`;
+    return text;
+  };
 
   const mapContainer = useRef(null);
   const map = useRef(null);
@@ -31,7 +53,6 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
     ...currPos,
     zoom: 16,
   });
-  const [hurdles, setHurdles] = useState([]);
 
   const directions = useRef(null);
   const { speak, voices } = useSpeechSynthesis();
@@ -48,7 +69,7 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
       accessToken: mapboxgl.accessToken,
       unit: "metric",
       profile: "mapbox/driving",
-      interactive: false,
+      interactive: true,
       controls: {
         instructions: false,
       },
@@ -80,82 +101,66 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
       console.error,
       { enableHighAccuracy: true }
     );
-    let interval = setInterval(() => {
-      navigator.geolocation.getCurrentPosition((pos) => {
-        const lastZoom = map.current.getZoom();
-        const center = [pos.coords.longitude, pos.coords.latitude];
-        directions.current.setOrigin(center);
-        setTimeout(() => {
-          map.current.setZoom(lastZoom);
-        }, 10);
-      }, console.error);
-    }, 3000);
+    navigator.geolocation.getCurrentPosition((pos) => {
+      const center = [pos.coords.longitude, pos.coords.latitude];
+      directions.current.setOrigin(center);
+      let ele = document.createElement("div");
+      ele.classList.add(
+        "w-6",
+        "h-6",
+        "rounded-full",
+        "bg-indigo-500",
+        "border-2",
+        "border-white"
+      );
+      new mapboxgl.Marker(ele).setLngLat(center).addTo(map.current);
+    }, console.error);
+    directions.current.on("origin", () => {
+      setOri(directions.current.getOrigin().geometry.coordinates);
+    });
     directions.current.on("destination", () => {
-      if (!done.current) {
-        done.current = true;
-        const origin = directions.current.getOrigin().geometry.coordinates;
-        const destination =
-          directions.current.getDestination().geometry.coordinates;
-        axios
-          .get(
-            `https://api.mapbox.com/directions/v5/mapbox/driving/${origin[0]},${origin[1]};${destination[0]},${destination[1]}?geometries=geojson&access_token=${MAPBOX_API_KEY}`
-          )
-          .then((res1) => {
-            if (res1.data.routes.length) {
-              const coords = res1.data.routes[0].geometry.coordinates;
-              console.log("Requesting...");
-              axios
-                .post(`${BACKEND_URL}api/v1/report/getonpath`, { coords })
-                .then((res2) => {
-                  if (res2.data.res) {
-                    setHurdles(() => {
-                      return res2.data.hurdles.map((hurdle) => {
-                        const container = document.createElement("div");
-                        container.classList.add("h-8");
-                        container.classList.add("w-8");
-                        container.classList.add("bg-red-500");
-                        container.classList.add("rounded-full");
-                        new mapboxgl.Marker(container)
-                          .setLngLat([
-                            hurdle.locationCoords.longitude,
-                            hurdle.locationCoords.latitude,
-                          ])
-                          .addTo(map.current);
-                        return hurdle;
-                      });
-                    });
-                  }
-                });
-            } else {
-              console.log("Route not found :-(");
-            }
-          });
-
-        // axios.post(`${BACKEND_URL}api/v1/report/getverified`).then((res) => {
-        // if (res2.data.res) {
-        //   setHurdles(() => {
-        //     return res.data.hurdles.map((hurdle) => {
-        //       const container = document.createElement("div");
-        //       container.classList.add("h-8");
-        //       container.classList.add("w-8");
-        //       container.classList.add("bg-red-500");
-        //       container.classList.add("rounded-full");
-        //       new mapboxgl.Marker(container)
-        //         .setLngLat([
-        //           hurdle.locationCoords.longitude,
-        //           hurdle.locationCoords.latitude,
-        //         ])
-        //         .addTo(map.current);
-        //       return hurdle;
-        //     });
-        //   });
-        // }
-        // });
-      }
+      const destination =
+        directions.current.getDestination().geometry.coordinates;
+      setDest(destination);
+      axios
+        .get(
+          `https://api.mapbox.com/directions/v5/mapbox/driving/${ori[0]},${ori[1]};${destination[0]},${destination[1]}?geometries=geojson&access_token=${MAPBOX_API_KEY}`
+        )
+        .then((res1) => {
+          if (res1.data.routes.length) {
+            const coords = res1.data.routes[0].geometry.coordinates;
+            axios
+              .post(`${BACKEND_URL}api/v1/report/getonpath`, { coords })
+              .then((res2) => {
+                if (res2.data.res) {
+                  let h = res2.data.hurdles.map((hurdle) => {
+                    const container = document.createElement("div");
+                    container.classList.add("h-8");
+                    container.classList.add("w-8");
+                    container.classList.add("bg-red-500");
+                    container.classList.add("rounded-full");
+                    new mapboxgl.Marker(container)
+                      .setLngLat([
+                        hurdle.locationCoords.longitude,
+                        hurdle.locationCoords.latitude,
+                      ])
+                      .addTo(map.current);
+                    return hurdle;
+                  });
+                  let s = speech(h);
+                  console.log(s);
+                  setTimeout(() => {
+                    speak(s, voices[2]);
+                  }, 300);
+                }
+              });
+          } else {
+            console.log("Route not found :-(");
+          }
+        });
     });
     return () => {
       map.current.remove();
-      clearInterval(interval);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -178,34 +183,13 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
         }}
         className="w-full flex justify-center items-center"
       >
-        <div
-          onClick={() => {
-            speak({
-              text: `Hello, ${user.name}. There are total ${
-                hurdles.length
-              } hurdles on the way.\
-              ${(() => {
-                const types = getHurdles();
-                let finalString = "";
-                let i = 0;
-                for (let key in types) {
-                  finalString +=
-                    types[key] +
-                    " " +
-                    key +
-                    (types[key] === 1 ? "" : "s") +
-                    (i === Object.keys(types).length - 1 ? "" : ", and ");
-                  i++;
-                }
-                return finalString;
-              })()}`,
-              voice: voices[2],
-            });
-          }}
-          className="w-1/2 md:w-1/3 bg-blue-600 text-white h-10 flex justify-center items-center rounded-3xl font-bold shadow-lg hover:bg-blue-800 cursor-pointer select-none"
+        <a
+          href={`roadrakshak://app/map/${ori[0]},${ori[1]}/${dest[0]},${dest[1]}`}
+          onClick={() => {}}
+          className="w-1/2 md:w-1/3 md:hidden bg-blue-600 text-white h-10 flex justify-center items-center rounded-3xl font-bold shadow-lg hover:bg-blue-800 cursor-pointer select-none"
         >
           Start Navigation
-        </div>
+        </a>
       </div>
     </div>
   );

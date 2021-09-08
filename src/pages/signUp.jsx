@@ -185,6 +185,7 @@ const SignUp = () => {
                   Sign Up
                 </button>
               </div>
+              <a href="roadrakshak://app/map">click here</a>
             </div>
           </div>
         </div>

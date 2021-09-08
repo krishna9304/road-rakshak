@@ -90,7 +90,7 @@ function App() {
       <BrowserRouter>
         <Switch>
           <Route path="/" exact>
-            {globalState.auth || 1 ? <Homepage /> : <SignUp />}
+            {globalState.auth || 1 ? <Homepage /> : <SignIn />}
           </Route>
           <Route path="/signup">
             {globalState.auth ? <MyAccount /> : <SignUp />}
@@ -99,7 +99,7 @@ function App() {
             {globalState.auth ? <MyAccount /> : <SignIn />}
           </Route>
           <Route path="/myaccount">
-            {globalState.auth ? <MyAccount /> : <SignUp />}
+            {globalState.auth ? <MyAccount /> : <SignIn />}
           </Route>
           <Route path="/fileacomplaint">
             {globalState.auth ? (
@@ -109,7 +109,7 @@ function App() {
                 <NotVerified />
               )
             ) : (
-              <SignUp />
+              <SignIn />
             )}
           </Route>
           <Route path="/travel">
@@ -120,10 +120,10 @@ function App() {
                 <NotVerified />
               )
             ) : (
-              <SignUp />
+              <SignIn />
             )}
           </Route>
-          <Route path="/news">{globalState.auth ? <News /> : <SignUp />}</Route>
+          <Route path="/news">{globalState.auth ? <News /> : <SignIn />}</Route>
           <Route path="/verifyuser/:token">
             <VerifyUser />
           </Route>
