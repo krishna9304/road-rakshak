@@ -74,8 +74,8 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
         instructions: false,
       },
     });
-    map.current.addControl(new mapboxgl.FullscreenControl(), "top-left");
-    map.current.addControl(directions.current, "top-right");
+    map.current.addControl(new mapboxgl.FullscreenControl(), "bottom-right");
+    map.current.addControl(directions.current, "bottom-left");
     map.current.on("move", () => {
       const pos = map.current.getCenter();
       setViewport((v) => ({
@@ -167,26 +167,31 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
   return (
     <div
       style={{
-        height: "80vh",
+        height: "90vh",
       }}
     >
       <div
         style={{
-          height: "70vh",
+          height: "80vh",
         }}
         ref={mapContainer}
         className="mapContainer select-none h-full flex"
       />
-      <div
-        style={{
-          height: "10vh",
-        }}
-        className="w-full flex justify-center items-center"
-      >
+      <div className="w-full flex flex-col justify-center items-center my-8">
+        <div className="hidden md:block">
+          Please use a mobile device to start navigation!
+        </div>
+        <div className="hidden md:block">
+          Also, make sure you have installed{" "}
+          <a download href="#" className="underline font-semibold">
+            Road Rakshak
+          </a>{" "}
+          app.
+        </div>
         <a
           href={`roadrakshak://app/map/${ori[0]},${ori[1]}/${dest[0]},${dest[1]}`}
           onClick={() => {}}
-          className="w-1/2 md:w-1/3 md:hidden bg-blue-600 text-white h-10 flex justify-center items-center rounded-3xl font-bold shadow-lg hover:bg-blue-800 cursor-pointer select-none"
+          className="w-1/2 md:hidden bg-blue-600 text-white h-10 flex justify-center items-center rounded-3xl font-bold shadow-lg hover:bg-blue-800 hover:text-white cursor-pointer select-none"
         >
           Start Navigation
         </a>

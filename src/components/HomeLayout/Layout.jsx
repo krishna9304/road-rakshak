@@ -52,11 +52,15 @@ const HomeLayout = ({ header, children }) => {
           </NavLink>
         </div>
       </Sider>
-      <Layout>
+      <Layout
+        style={{
+          padding: 0,
+        }}
+      >
         <Header className="uppercase select-none site-layout-sub-header-background flex justify-center items-center text-lg font-bold">
           {header}
         </Header>
-        <div className="overflow-y-auto mx-8 my-6">
+        <div className="overflow-y-auto">
           <div
             className={`site-layout-background ${
               header === "Travel" ? "" : "p-6"
@@ -65,6 +69,7 @@ const HomeLayout = ({ header, children }) => {
             {children}
           </div>
         </div>
+        <div className="bg-white flex-1"></div>
       </Layout>
     </Layout>
   );
