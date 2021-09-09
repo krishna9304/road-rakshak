@@ -1,5 +1,5 @@
 module.exports = {
   BACKEND_URL: `http://localhost:8080/`,
   MAPBOX_API_KEY:
-    "pk.eyJ1Ijoibm90LXZhbGlkIiwiYSI6ImNrbGt1M2ZiMTEwaDMycG5tbDhseTY5YmoifQ.j0DITrdH06LMzgQ4A-H5vg",
+    "pk.eyJ1Ijoicm9hZHJha3NoYWsiLCJhIjoiY2t0Y2p5bWo0MGRnbjJxbzVmbHowb3RyaSJ9.zvpmBw1__ZKPtLoq2FW37Q",
 };
