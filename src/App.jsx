@@ -21,7 +21,7 @@ import { useCookies } from "react-cookie";
 
 function App() {
   let [authDone, setAuthDone] = useState(false);
-  const [cookies, setCookie] = useCookies(["jwt"]);
+  const [cookies] = useCookies(["jwt"]);
   let dispatch = useDispatch();
   const globalState = useSelector((state) => state);
   let authUser = () => {
