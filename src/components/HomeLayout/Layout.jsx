@@ -57,7 +57,13 @@ const HomeLayout = ({ header, children }) => {
           {header}
         </Header>
         <div className="overflow-y-auto mx-8 my-6">
-          <div className="site-layout-background p-6">{children}</div>
+          <div
+            className={`site-layout-background ${
+              header === "Travel" ? "" : "p-6"
+            }`}
+          >
+            {children}
+          </div>
         </div>
       </Layout>
     </Layout>
