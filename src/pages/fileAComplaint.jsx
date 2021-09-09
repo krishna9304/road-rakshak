@@ -125,7 +125,7 @@ const FileAComplaint = () => {
               </div>
               <div className="col-span-2 lg:col-span-1">
                 <div className="relative ">
-                  <label for="siteimage">Site Image</label>
+                  <label htmlFor="siteimage">Site Image</label>
                   <input
                     onChange={(e) => {
                       setData({
