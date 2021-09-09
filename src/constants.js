@@ -4,5 +4,5 @@ module.exports = {
     ? `http://localhost:8080/`
     : "https://road-rakshak-server.herokuapp.com/",
   MAPBOX_API_KEY:
-    "pk.eyJ1Ijoibm90LXZhbGlkIiwiYSI6ImNrbGt1M2ZiMTEwaDMycG5tbDhseTY5YmoifQ.j0DITrdH06LMzgQ4A-H5vg",
+    "pk.eyJ1Ijoic21hcnQ5MzA0IiwiYSI6ImNrdGNpODc2OTBkYTEyd21hNG9qaGZqN2kifQ.vBvhbBI_9cxXZdM_ENUfQA",
 };
