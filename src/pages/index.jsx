@@ -14,6 +14,7 @@ mapboxgl.accessToken = MAPBOX_API_KEY;
 const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
   const [ori, setOri] = useState([0, 0]);
   const [dest, setDest] = useState([0, 0]);
+
   const getHurdles = (hurdl) => {
     const types = {};
     hurdl.forEach((h) => {
@@ -49,6 +50,7 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
 
   const mapContainer = useRef(null);
   const map = useRef(null);
+
   const [viewport, setViewport] = useState({
     ...currPos,
     zoom: 16,
@@ -115,9 +117,11 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
       );
       new mapboxgl.Marker(ele).setLngLat(center).addTo(map.current);
     }, console.error);
+
     directions.current.on("origin", () => {
       setOri(directions.current.getOrigin().geometry.coordinates);
     });
+
     directions.current.on("destination", () => {
       const destination =
         directions.current.getDestination().geometry.coordinates;
@@ -130,7 +134,7 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
           if (res1.data.routes.length) {
             const coords = res1.data.routes[0].geometry.coordinates;
             axios
-              .post(`${BACKEND_URL}api/v1/report/getonpath`, { coords })
+              .post(`${BACKEND_URL}api/v1/report/getverified`)
               .then((res2) => {
                 if (res2.data.res) {
                   let h = res2.data.hurdles.map((hurdle) => {
@@ -148,8 +152,8 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
                     return hurdle;
                   });
                   let s = speech(h);
-                  console.log(s);
                   setTimeout(() => {
+                    console.log(s);
                     speak(s, voices[2]);
                   }, 300);
                 }
@@ -159,6 +163,7 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
           }
         });
     });
+
     return () => {
       map.current.remove();
     };
