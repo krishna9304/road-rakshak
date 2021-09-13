@@ -9,7 +9,7 @@ const NewsCard = ({ img, headline, description, references }) => {
         onClick={() => {
           setOpen(true);
         }}
-        className="flex mb-4 cursor-pointer w-full h-36 md:h-40 shadow-md"
+        className="flex mb-4 cursor-pointer w-full h-36 md:h-40 shadow-md p-2"
       >
         <div className="w-1/3 md:w-1/5 h-full">
           <img src={img} alt="" className="h-full w-full object-cover" />
@@ -18,7 +18,7 @@ const NewsCard = ({ img, headline, description, references }) => {
           <div className="w-full text-2xl p-1 font-semibold shadow-sm flex items-center h-1/4">
             {headline}
           </div>
-          <div className="w-full text-xs md:text-sm p-1 h-3/4">
+          <div className="w-full text-xs md:text-sm p-1 h-3/4 overflow-auto">
             {description}
           </div>
         </div>
