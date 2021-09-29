@@ -4,6 +4,9 @@ import { useState } from "react";
 import { useSelector } from "react-redux";
 import HomeLayout from "../components/HomeLayout/Layout";
 import { BACKEND_URL } from "../constants";
+import { Select } from "antd";
+
+const { Option } = Select;
 
 const FileAComplaint = () => {
   const user = useSelector((state) => state.user);
@@ -77,18 +80,26 @@ const FileAComplaint = () => {
             <div className="grid max-w-xl grid-cols-2 gap-4 m-auto">
               <div className="col-span-2 lg:col-span-1">
                 <div className="relative ">
-                  <input
-                    value={data.hurdleType}
-                    onChange={(e) => {
-                      setData((d) => ({
-                        ...d,
-                        hurdleType: e.target.value,
-                      }));
+                  <Select
+                    showSearch
+                    className="w-full"
+                    placeholder="Select a hurdle type"
+                    optionFilterProp="children"
+                    filterOption={(input, option) =>
+                      option.children
+                        .toLowerCase()
+                        .indexOf(input.toLowerCase()) >= 0
+                    }
+                    size="large"
+                    onChange={(val) => {
+                      setData((d) => ({ ...d, hurdleType: val }));
                     }}
-                    type="text"
-                    className="rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
-                    placeholder="Hurdle Type"
-                  />
+                  >
+                    <Option value="POTHOLE">POTHOLE</Option>
+                    <Option value="CONSTRUCTION SITE">CONSTRUCTION SITE</Option>
+                    <Option value="MANHOLE">MANHOLE</Option>
+                    <Option value="MUD">MUD</Option>
+                  </Select>
                 </div>
               </div>
               <div className="col-span-2 lg:col-span-1">
