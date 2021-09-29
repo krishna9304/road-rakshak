@@ -1,9 +1,10 @@
-import { notification } from "antd";
+import { Input, notification } from "antd";
 import axios from "axios";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import HomeLayout from "../components/HomeLayout/Layout";
 import { BACKEND_URL } from "../constants";
+import ReactMapGL, { Marker } from "react-map-gl";
 import { Select } from "antd";
 
 const { Option } = Select;
@@ -69,35 +70,65 @@ const FileAComplaint = () => {
       });
     }
   };
+  let [viewport, setViewport] = useState({
+    latitude: 0,
+    longitude: 0,
+    zoom: 14,
+    width: "100%",
+    height: "100%",
+  });
+  const [center, setCenter] = useState([0, 0]);
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setCenter([pos.coords.longitude, pos.coords.latitude]);
+      },
+      (err) => {
+        console.error(err);
+      },
+      {
+        enableHighAccuracy: true,
+      }
+    );
+    return () => {};
+    // eslint-disable-next-line
+  }, []);
+  useEffect(() => {
+    setViewport((v) => ({ ...v, latitude: center[1], longitude: center[0] }));
+  }, [center]);
   return (
     <HomeLayout header={"File a complaint"}>
       <div className="w-full flex justify-center items-center">
-        <div className="flex w-full max-w-sm space-x-3">
-          <div className="w-full max-w-2xl px-5 py-10 m-auto bg-white rounded-lg dark:bg-gray-800 shadow-xl  border-t-4 border-green-400">
+        <div className="flex w-full space-x-3">
+          <div className="w-full max-w-2xl px-5 py-10 m-auto bg-white rounded-lg dark:bg-gray-800 shadow-xl  border-t-4 border-green-400 justify-center items-center">
             <div className="mb-6 text-3xl font-light text-center text-gray-800 dark:text-white">
               Please fill the form!
             </div>
-            <div className="grid max-w-xl grid-cols-2 gap-4 m-auto">
+            <div className="max-w-xl flex flex-col w-full gap-4 m-auto">
               <div className="col-span-2 lg:col-span-1">
                 <div className="relative ">
                   <Select
                     showSearch
-                    className="w-full"
-                    placeholder="Select a hurdle type"
+                    style={{ width: 200 }}
+                    placeholder="Select a person"
                     optionFilterProp="children"
                     filterOption={(input, option) =>
                       option.children
                         .toLowerCase()
                         .indexOf(input.toLowerCase()) >= 0
                     }
-                    size="large"
                     onChange={(val) => {
-                      setData((d) => ({ ...d, hurdleType: val }));
+                      setData((prevData) => ({
+                        ...prevData,
+                        hurdleType: val,
+                      }));
                     }}
                   >
-                    <Option value="POTHOLE">POTHOLE</Option>
-                    <Option value="CONSTRUCTION SITE">CONSTRUCTION SITE</Option>
                     <Option value="MANHOLE">MANHOLE</Option>
+                    <Option value="POTHOLE">POTHOLE</Option>
+                    <Option value="CRUNSTRUCTION SITE">
+                      CRUNSTRUCTION SITE
+                    </Option>
                     <Option value="MUD">MUD</Option>
                   </Select>
                 </div>
@@ -133,6 +164,39 @@ const FileAComplaint = () => {
                   rows="5"
                   cols="40"
                 />
+              </div>
+              <div className={`border-2 h-96 w-full border-black`}>
+                <ReactMapGL
+                  onClick={(e) => {
+                    setCenter([e.lngLat[0], e.lngLat[1]]);
+                  }}
+                  mapStyle={"mapbox://styles/mapbox/streets-v11"}
+                  mapboxApiAccessToken={
+                    "pk.eyJ1IjoicmliaTI5IiwiYSI6ImNrdGZtejF3ZjAyMzYyb3FzcGdlcHdyMmgifQ.mk68YIafe7p9eu-hVFJVpQ"
+                  }
+                  {...viewport}
+                  onViewportChange={(nextView) => setViewport(nextView)}
+                >
+                  <Marker latitude={center[1]} longitude={center[0]}>
+                    <div
+                      className="text-2xl bg-blue-700 w-4 h-4 transform -translate-x-2 -translate-y-2 border rounded-full"
+                      style={{
+                        marginTop: -(viewport.zoom ** 2.9 / 100) / 2,
+                        marginLeft: -(viewport.zoom ** 2.9 / 100) / 2,
+                      }}
+                    ></div>
+                  </Marker>
+                </ReactMapGL>
+              </div>
+              <div className="flex flex-col gap-2">
+                <div>
+                  Longitude:&nbsp;
+                  <Input value={center[0]} type="number" />
+                </div>
+                <div>
+                  Latitude:&nbsp;
+                  <Input value={center[1]} type="number" />
+                </div>
               </div>
               <div className="col-span-2 lg:col-span-1">
                 <div className="relative ">
