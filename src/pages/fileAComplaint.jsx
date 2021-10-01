@@ -10,6 +10,7 @@ import { Select } from "antd";
 const { Option } = Select;
 
 const FileAComplaint = () => {
+  const [center, setCenter] = useState([0, 0]);
   const user = useSelector((state) => state.user);
   const [data, setData] = useState({
     reportedBy: user._id,
@@ -17,6 +18,10 @@ const FileAComplaint = () => {
     address: "",
     description: "",
     siteImage: null,
+    locationCoords: {
+      latitude: 0,
+      longitude: 0,
+    },
   });
   let createNewReport = async () => {
     if (
@@ -32,6 +37,8 @@ const FileAComplaint = () => {
       formData.append("hurdleType", data.hurdleType);
       formData.append("reportedBy", user._id);
       formData.append("address", data.address);
+      formData.append("latitude", data.locationCoords.latitude);
+      formData.append("longitude", data.locationCoords.longitude);
       formData.append("timestamp", String(Date.now()));
       const config = {
         headers: {
@@ -77,7 +84,6 @@ const FileAComplaint = () => {
     width: "100%",
     height: "100%",
   });
-  const [center, setCenter] = useState([0, 0]);
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -105,18 +111,11 @@ const FileAComplaint = () => {
               Please fill the form!
             </div>
             <div className="max-w-xl flex flex-col w-full gap-4 m-auto">
-              <div className="col-span-2 lg:col-span-1">
+              <div className="col-span-1">
                 <div className="relative ">
                   <Select
-                    showSearch
-                    style={{ width: 200 }}
-                    placeholder="Select a person"
-                    optionFilterProp="children"
-                    filterOption={(input, option) =>
-                      option.children
-                        .toLowerCase()
-                        .indexOf(input.toLowerCase()) >= 0
-                    }
+                    className="w-full"
+                    placeholder="Select a hurdle type"
                     onChange={(val) => {
                       setData((prevData) => ({
                         ...prevData,
@@ -129,7 +128,7 @@ const FileAComplaint = () => {
                     <Option value="CRUNSTRUCTION SITE">
                       CRUNSTRUCTION SITE
                     </Option>
-                    <Option value="MUD">MUD</Option>
+                    <Option value="VEHICLE CRASH">VEHICLE CRASH</Option>
                   </Select>
                 </div>
               </div>
@@ -168,6 +167,13 @@ const FileAComplaint = () => {
               <div className={`border-2 h-96 w-full border-black`}>
                 <ReactMapGL
                   onClick={(e) => {
+                    setData((d) => ({
+                      ...d,
+                      locationCoords: {
+                        latitude: e.lngLat[1],
+                        longitude: e.lngLat[0],
+                      },
+                    }));
                     setCenter([e.lngLat[0], e.lngLat[1]]);
                   }}
                   mapStyle={"mapbox://styles/mapbox/streets-v11"}
@@ -198,7 +204,7 @@ const FileAComplaint = () => {
                   <Input value={center[1]} type="number" />
                 </div>
               </div>
-              <div className="col-span-2 lg:col-span-1">
+              <div className="">
                 <div className="relative ">
                   <label htmlFor="siteimage">Site Image</label>
                   <input
@@ -209,7 +215,7 @@ const FileAComplaint = () => {
                       });
                     }}
                     name="image"
-                    accept="image/*"
+                    accept="image/*;capture=camera"
                     type="file"
                     className="rounded-lg border-transparent flex-1 appearance-none border border-gray-300 w-full py-2 px-4 bg-white text-gray-700 placeholder-gray-400 shadow-sm text-base focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-transparent"
                   />
