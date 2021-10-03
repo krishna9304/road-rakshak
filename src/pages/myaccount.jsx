@@ -272,7 +272,6 @@ const MyAccount = () => {
       <div className="w-full flex text-center justify-center items-center">
         <button
           onClick={() => {
-            console.log("logging out");
             document.cookie += ";max-age=0";
             dispatch(setAuth(false));
             dispatch(setUser(null));

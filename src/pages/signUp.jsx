@@ -1,4 +1,4 @@
-import { notification } from "antd";
+import { notification, Spin } from "antd";
 import axios from "axios";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -8,9 +8,11 @@ import { BACKEND_URL } from "../constants";
 import { setAuth, setSocket, setUser } from "../redux/actions/actions";
 
 const SignUp = () => {
+  const [spin, setSpin] = useState(false);
   const signup = () => {
     if (repass === data.password) {
       axios.post(`${BACKEND_URL}api/v1/userauth/signup`, data).then((res) => {
+        setSpin(false);
         if (res.data.res) {
           document.cookie = "jwt=" + res.data.jwt;
           notification.success({
@@ -109,6 +111,7 @@ const SignUp = () => {
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       signup();
+                      setSpin(true);
                     }
                   }}
                   value={data.name}
@@ -128,6 +131,7 @@ const SignUp = () => {
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       signup();
+                      setSpin(true);
                     }
                   }}
                   value={data.email}
@@ -148,6 +152,7 @@ const SignUp = () => {
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       signup();
+                      setSpin(true);
                     }
                   }}
                   value={data.password}
@@ -164,6 +169,7 @@ const SignUp = () => {
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
                       signup();
+                      setSpin(true);
                     }
                   }}
                   value={repass}
@@ -179,10 +185,11 @@ const SignUp = () => {
                 <button
                   onClick={() => {
                     signup();
+                    setSpin(true);
                   }}
                   className="py-2 px-4  bg-green-400 hover:bg-green-500 focus:ring-green-300 focus:ring-offset-green-200 text-white w-1/2 transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg "
                 >
-                  Sign Up
+                  Sign Up {spin ? <Spin /> : null}
                 </button>
               </div>
             </div>

@@ -1,4 +1,4 @@
-import { notification } from "antd";
+import { notification, Spin } from "antd";
 import axios from "axios";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
@@ -8,8 +8,10 @@ import { BACKEND_URL } from "../constants";
 import { setAuth, setSocket, setUser } from "../redux/actions/actions";
 
 const SignIn = () => {
+  const [spin, setSpin] = useState(false);
   const signin = () => {
     axios.post(`${BACKEND_URL}api/v1/userauth/signin`, userData).then((res) => {
+      setSpin(false);
       if (res.data.res) {
         document.cookie = "jwt=" + res.data.jwt;
         notification.success({
@@ -104,6 +106,7 @@ const SignIn = () => {
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         signin();
+                        setSpin(true);
                       }
                     }}
                     onChange={(e) => {
@@ -141,6 +144,7 @@ const SignIn = () => {
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
                         signin();
+                        setSpin(true);
                       }
                     }}
                     onChange={(e) => {
@@ -161,10 +165,11 @@ const SignIn = () => {
                 <button
                   onClick={() => {
                     signin();
+                    setSpin(true);
                   }}
                   className="py-2 px-4  bg-green-400 hover:bg-green-500 focus:ring-green-300 focus:ring-offset-green-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg "
                 >
-                  Sign In
+                  Sign In {spin ? <Spin /> : null}
                 </button>
               </div>
             </div>

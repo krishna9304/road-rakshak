@@ -153,7 +153,6 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
                   });
                   let s = speech(h);
                   setTimeout(() => {
-                    console.log(s);
                     speak(s, voices[2]);
                   }, 300);
                 }

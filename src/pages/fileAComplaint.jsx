@@ -1,4 +1,4 @@
-import { Input, notification } from "antd";
+import { Input, notification, Spin } from "antd";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -10,6 +10,7 @@ import { Select } from "antd";
 const { Option } = Select;
 
 const FileAComplaint = () => {
+  const [spin, setSpin] = useState(false);
   const [center, setCenter] = useState([0, 0]);
   const user = useSelector((state) => state.user);
   const [data, setData] = useState({
@@ -50,6 +51,7 @@ const FileAComplaint = () => {
         formData,
         config
       );
+      setSpin(false);
       if (!res.data.res) {
         res.data.errors.forEach((err) => {
           notification.error({
@@ -71,6 +73,7 @@ const FileAComplaint = () => {
         });
       }
     } else {
+      setSpin(false);
       notification.error({
         message: "Error",
         description: "Please fill all the details correctly!",
@@ -125,9 +128,7 @@ const FileAComplaint = () => {
                   >
                     <Option value="MANHOLE">MANHOLE</Option>
                     <Option value="POTHOLE">POTHOLE</Option>
-                    <Option value="CONSTRUCTION SITE">
-                      CONSTRUCTION SITE
-                    </Option>
+                    <Option value="CONSTRUCTION SITE">CONSTRUCTION SITE</Option>
                     <Option value="VEHICLE CRASH">VEHICLE CRASH</Option>
                   </Select>
                 </div>
@@ -224,11 +225,12 @@ const FileAComplaint = () => {
               <div className="col-span-2 text-right">
                 <button
                   onClick={() => {
+                    setSpin(true);
                     createNewReport();
                   }}
                   className="py-2 px-4  bg-green-500 hover:bg-green-600 focus:ring-green-500 focus:ring-offset-green-200 text-white w-full transition ease-in duration-200 text-center text-base font-light shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg "
                 >
-                  Report
+                  Report {spin ? <Spin /> : null}
                 </button>
               </div>
             </div>
