@@ -10,31 +10,34 @@ import { setAuth, setSocket, setUser } from "../redux/actions/actions";
 const SignIn = () => {
   const [spin, setSpin] = useState(false);
   const signin = () => {
-    axios.post(`${BACKEND_URL}api/v1/userauth/signin`, userData).then((res) => {
-      setSpin(false);
-      if (res.data.res) {
-        document.cookie = "jwt=" + res.data.jwt;
-        notification.success({
-          message: "Success",
-          description: res.data.msg,
-        });
-        dispatch(setUser(res.data.userData));
-        dispatch(setAuth(true));
-        const socket = io(`${BACKEND_URL}`, {
-          transports: ["websocket"],
-        });
-        socket.emit("USER_ID", res.data.userData._id);
-        dispatch(setSocket(socket));
-        history.push("/myaccount");
-      } else {
-        res.data.errors.forEach((err) => {
-          notification.error({
-            message: "Failed",
-            description: err,
+    axios
+      .post(`${BACKEND_URL}api/v1/userauth/signin`, userData)
+      .then((res) => {
+        setSpin(false);
+        if (res.data.res) {
+          document.cookie = "jwt=" + res.data.jwt;
+          notification.success({
+            message: "Success",
+            description: res.data.msg,
           });
-        });
-      }
-    });
+          dispatch(setUser(res.data.userData));
+          dispatch(setAuth(true));
+          const socket = io(`${BACKEND_URL}`, {
+            transports: ["websocket"],
+          });
+          socket.emit("USER_ID", res.data.userData._id);
+          dispatch(setSocket(socket));
+          history.push("/myaccount");
+        } else {
+          res.data.errors.forEach((err) => {
+            notification.error({
+              message: "Failed",
+              description: err,
+            });
+          });
+        }
+      })
+      .catch(console.error);
   };
   const [userData, setUserData] = useState({
     password: "",
@@ -105,8 +108,8 @@ const SignIn = () => {
                   <input
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
-                        signin();
                         setSpin(true);
+                        signin();
                       }
                     }}
                     onChange={(e) => {
@@ -143,8 +146,8 @@ const SignIn = () => {
                   <input
                     onKeyDown={(e) => {
                       if (e.key === "Enter") {
-                        signin();
                         setSpin(true);
+                        signin();
                       }
                     }}
                     onChange={(e) => {
@@ -164,8 +167,8 @@ const SignIn = () => {
               <div className="flex w-full">
                 <button
                   onClick={() => {
-                    signin();
                     setSpin(true);
+                    signin();
                   }}
                   className="py-2 px-4  bg-green-400 hover:bg-green-500 focus:ring-green-300 focus:ring-offset-green-200 text-white w-full transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg "
                 >

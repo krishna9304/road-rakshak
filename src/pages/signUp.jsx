@@ -37,6 +37,7 @@ const SignUp = () => {
         }
       });
     } else {
+      setSpin(false);
       notification.error({
         message: "Invalid form",
         description: "Password does not match",
@@ -110,8 +111,8 @@ const SignUp = () => {
                 <input
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      signup();
                       setSpin(true);
+                      signup();
                     }
                   }}
                   value={data.name}
@@ -130,8 +131,8 @@ const SignUp = () => {
                 <input
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      signup();
                       setSpin(true);
+                      signup();
                     }
                   }}
                   value={data.email}
@@ -151,8 +152,8 @@ const SignUp = () => {
                 <input
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      signup();
                       setSpin(true);
+                      signup();
                     }
                   }}
                   value={data.password}
@@ -168,8 +169,8 @@ const SignUp = () => {
                 <input
                   onKeyDown={(e) => {
                     if (e.key === "Enter") {
-                      signup();
                       setSpin(true);
+                      signup();
                     }
                   }}
                   value={repass}
@@ -184,8 +185,8 @@ const SignUp = () => {
               <div className="flex w-full my-4 justify-center">
                 <button
                   onClick={() => {
-                    signup();
                     setSpin(true);
+                    signup();
                   }}
                   className="py-2 px-4  bg-green-400 hover:bg-green-500 focus:ring-green-300 focus:ring-offset-green-200 text-white w-1/2 transition ease-in duration-200 text-center text-base font-semibold shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2  rounded-lg "
                 >
