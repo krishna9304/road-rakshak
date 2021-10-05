@@ -187,7 +187,11 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
         </div>
         <div className="hidden md:block">
           Also, make sure you have installed{" "}
-          <a download href="#" className="underline font-semibold">
+          <a
+            download
+            href="https://drive.google.com/file/d/1ZHupW-cbnOJmXq0v55R0XaEZKUdQ9tzX/view?usp=sharing"
+            className="underline font-semibold"
+          >
             Road Rakshak
           </a>{" "}
           app.

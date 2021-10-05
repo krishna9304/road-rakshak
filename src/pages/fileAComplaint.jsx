@@ -46,31 +46,35 @@ const FileAComplaint = () => {
           "content-type": "multipart/form-data",
         },
       };
-      let res = await axios.post(
-        `${BACKEND_URL}api/v1/report/createReport`,
-        formData,
-        config
-      );
-      setSpin(false);
-      if (!res.data.res) {
-        res.data.errors.forEach((err) => {
-          notification.error({
-            message: "Failed",
-            description: err,
+      try {
+        let res = await axios.post(
+          `${BACKEND_URL}api/v1/report/createReport`,
+          formData,
+          config
+        );
+        setSpin(false);
+        if (!res.data.res) {
+          res.data.errors.forEach((err) => {
+            notification.error({
+              message: "Failed",
+              description: err,
+            });
           });
-        });
-      } else {
-        notification.success({
-          message: "Success",
-          description: res.data.msg,
-        });
-        setData({
-          address: "",
-          description: "",
-          hurdleType: "",
-          reportedBy: user._id,
-          siteImage: null,
-        });
+        } else {
+          notification.success({
+            message: "Success",
+            description: res.data.msg,
+          });
+          setData({
+            address: "",
+            description: "",
+            hurdleType: "",
+            reportedBy: user._id,
+            siteImage: null,
+          });
+        }
+      } catch (error) {
+        console.error(error);
       }
     } else {
       setSpin(false);
