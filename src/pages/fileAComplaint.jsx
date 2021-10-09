@@ -54,12 +54,19 @@ const FileAComplaint = () => {
         );
         setSpin(false);
         if (!res.data.res) {
-          res.data.errors.forEach((err) => {
+          if(res.data.errors){
+            res.data.errors.forEach((err) => {
             notification.error({
               message: "Failed",
               description: err,
             });
           });
+          }else{
+            notification.error({
+              message: "Failed",
+              description: res.data.msg
+            })
+          }
         } else {
           notification.success({
             message: "Success",
