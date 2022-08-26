@@ -132,7 +132,7 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
         )
         .then((res1) => {
           if (res1.data.routes.length) {
-            const coords = res1.data.routes[0].geometry.coordinates;
+            // const coords = res1.data.routes[0].geometry.coordinates;
             axios
               .post(`${BACKEND_URL}api/v1/report/getverified`)
               .then((res2) => {

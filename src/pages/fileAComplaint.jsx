@@ -54,18 +54,18 @@ const FileAComplaint = () => {
         );
         setSpin(false);
         if (!res.data.res) {
-          if(res.data.errors){
+          if (res.data.errors) {
             res.data.errors.forEach((err) => {
-            notification.error({
-              message: "Failed",
-              description: err,
+              notification.error({
+                message: "Failed",
+                description: err,
+              });
             });
-          });
-          }else{
+          } else {
             notification.error({
               message: "Failed",
-              description: res.data.msg
-            })
+              description: res.data.msg,
+            });
           }
         } else {
           notification.success({

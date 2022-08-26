@@ -14,10 +14,6 @@ const News = () => {
       .then((res) => {
         if (res.data.res) {
           setNews(res.data.news);
-          notification.success({
-            message: "Success",
-            description: res.data.msg,
-          });
         } else {
           notification.error({
             message: "Error",

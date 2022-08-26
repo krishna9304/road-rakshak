@@ -12,7 +12,6 @@ import MyAccount from "./pages/myaccount";
 import FileAComplaint from "./pages/fileAComplaint";
 import Travel from "./pages/travel";
 import News from "./pages/news";
-import { notification } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
 import VerifyUser from "./pages/verifyuser";
 import NotVerified from "./pages/notverified";
@@ -45,10 +44,6 @@ function App() {
                 dispatch(setSocket(socket));
                 socket.emit("USER_ID", res.data.userData._id);
                 setAuthDone(true);
-                notification.success({
-                  message: "Success",
-                  description: res.data.msg,
-                });
               } else {
                 dispatch(setAuth(false));
                 dispatch(setUser(null));
