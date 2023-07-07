@@ -6,8 +6,6 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-directions/dist/mapbox-gl-directions.css";
 import { BACKEND_URL, MAPBOX_API_KEY } from "../constants";
 import axios from "axios";
-import { useSpeechSynthesis } from "react-speech-kit";
-import { useSelector } from "react-redux";
 
 mapboxgl.accessToken = MAPBOX_API_KEY;
 
@@ -26,10 +24,14 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
     return types;
   };
 
+  // eslint-disable-next-line
   const speech = (h) => {
-    let text = `Hello, ${user.name}. There are total ${h.length} hurdle${
+    if (!h.length) {
+      return "Yayy. There are no hurdles on your way.";
+    }
+    let text = `Hello. There are total ${h.length} hurdle${
       h.length > 1 ? "s" : ""
-    } on the way.\
+    } on the way to your destination. They are \
       ${(() => {
         const types = getHurdles(h);
         let finalString = "";
@@ -57,8 +59,6 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
   });
 
   const directions = useRef(null);
-  const { speak, voices } = useSpeechSynthesis();
-  const user = useSelector((state) => state.user);
 
   useEffect(() => {
     map.current = new mapboxgl.Map({
@@ -126,41 +126,35 @@ const Map = ({ currPos = { latitude: 0, longitude: 0 } }) => {
       const destination =
         directions.current.getDestination().geometry.coordinates;
       setDest(destination);
-      axios
-        .get(
-          `https://api.mapbox.com/directions/v5/mapbox/driving/${ori[0]},${ori[1]};${destination[0]},${destination[1]}?geometries=geojson&access_token=${MAPBOX_API_KEY}`
-        )
-        .then((res1) => {
-          if (res1.data.routes.length) {
-            // const coords = res1.data.routes[0].geometry.coordinates;
-            axios
-              .post(`${BACKEND_URL}api/v1/report/getverified`)
-              .then((res2) => {
-                if (res2.data.res) {
-                  let h = res2.data.hurdles.map((hurdle) => {
-                    const container = document.createElement("div");
-                    container.classList.add("h-8");
-                    container.classList.add("w-8");
-                    container.classList.add("bg-red-500");
-                    container.classList.add("rounded-full");
-                    new mapboxgl.Marker(container)
-                      .setLngLat([
-                        hurdle.locationCoords.longitude,
-                        hurdle.locationCoords.latitude,
-                      ])
-                      .addTo(map.current);
-                    return hurdle;
-                  });
-                  let s = speech(h);
-                  setTimeout(() => {
-                    speak(s, voices[2]);
-                  }, 300);
-                }
-              });
-          } else {
-            console.log("Route not found :-(");
-          }
-        });
+      axios.post(`${BACKEND_URL}api/v1/report/getverified`).then((res2) => {
+        if (res2.data.res) {
+          res2.data.hurdles.forEach((hurdle) => {
+            const container = document.createElement("div");
+            container.classList.add("h-8");
+            container.classList.add("w-8");
+            container.classList.add("bg-red-500");
+            container.classList.add("rounded-full");
+            new mapboxgl.Marker(container)
+              .setLngLat([
+                hurdle.locationCoords.longitude,
+                hurdle.locationCoords.latitude,
+              ])
+              .addTo(map.current);
+          });
+        }
+      });
+      // axios
+      //   .get(
+      //     `https://api.mapbox.com/directions/v5/mapbox/driving/${ori[0]},${ori[1]};${destination[0]},${destination[1]}?geometries=geojson&access_token=${MAPBOX_API_KEY}`
+      //   )
+      //   .then((res1) => {
+      //     if (res1.data.routes.length) {
+      //       // const coords = res1.data.routes[0].geometry.coordinates;
+
+      //     } else {
+      //       console.log("Route not found :-(");
+      //     }
+      //   });
     });
 
     return () => {
